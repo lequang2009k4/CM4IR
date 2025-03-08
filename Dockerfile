@@ -9,5 +9,4 @@ WORKDIR /opt/CM4IR
 # Other packages in requirements.txt alraedy exists in base image
 RUN pip install lpips einops==0.8.0 flash-attn==0.2.8 numpy==1.24.4
 
-#CMD ./evaluate_CM4IR.sh
-CMD sleep infinity
+CMD ./evaluate_CM4IR.sh
