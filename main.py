@@ -8,20 +8,17 @@ import os
 import torch
 import numpy as np
 
-# from runners.diffusion import Diffusion
 from guided_diffusion.diffusion import Diffusion
 
 torch.set_printoptions(sci_mode=False)
 
 
-# os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
-
 def parse_args_and_config():
     parser = argparse.ArgumentParser(description=globals()["__doc__"])
 
     parser.add_argument(
-        # "--config", type=str, required=True, help="Path to the config file"
-        "--config", type=str, default='celeba_hq.yml', help="Path to the config file"  # e.g.,  celeba_hq, imagenet_256
+        "--config", type=str, default='lsun_bedroom_256.yml', help="Path to the config file"
+        # e.g.,  lsun_bedroom_256.yml, lsun_cat_256.yml
     )
     parser.add_argument(
         "--model_ckpt", type=str, default='cd_bedroom256_lpips.pt', help="Name of the model checkpoint"
@@ -40,7 +37,7 @@ def parse_args_and_config():
         "--path_y",
         type=str,
         # required=True,
-        default='celeba_hq',  # e.g.,  celeba_hq, imagenet
+        default='lsun_bedroom',  # e.g.,  lsun_bedroom, lsun_cat
         help="Path of the test dataset.",
     )
     parser.add_argument(
