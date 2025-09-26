@@ -18,6 +18,7 @@ target_dir="/kaggle/working/CM4IR/exp/datasets/lsun_cat/cat"
 
 
 # Đọc từng đường dẫn ảnh từ file input_list.txt
+rm -rf $target_dir/*
 while read img; do
   [ -z "$img" ] && continue  # Bỏ qua dòng trống
 
@@ -29,10 +30,7 @@ while read img; do
 
 
   # Copy ảnh từ thư mục source_dir vào thư mục đích
-  mv "$source_img" "$target_dir/$fname" || { echo "FAIL MOVE $img" >&2; continue; }
-
-  # Tạo run_id dựa trên tên file
-  run_id="run_${fname%.*}"  # Ví dụ: run_cat001
+  cp "$source_img" "$target_dir/$fname" || { echo "FAIL MOVE $img" >&2; continue; }
 
 done
 
@@ -43,13 +41,13 @@ python3 /kaggle/working/CM4IR/main.py \
   --deg sr_bicubic \
   --deg_scale 4 \
   --sigma_y 0.05 \
-  -i "$run_id" \
+  -i "$task_id" \
   --iN 250 \
   --gamma 0.2 \
   --model_ckpt lsun_cat/cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
 
 # Đường dẫn kết quả đầu ra
-outdir="/kaggle/working/CM4IR/exp/image_samples/$run_id"
+outdir="/kaggle/working/CM4IR/exp/image_samples/$task_id"
 
 # Upload kết quả lên HDFS
 hdfs dfs -put -f "$outdir"/*.png /result/
