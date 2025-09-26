@@ -10,25 +10,36 @@ task_id=$((${HADOOP_TASK_ID:-0}))  # Nếu không có task_id, mặc định là
 gpu_id=$((task_id % gpu_count))    # Chỉ định GPU cho task mapper dựa trên task_id
 export CUDA_VISIBLE_DEVICES=$gpu_id  # Chỉ định GPU cho task này
 
+# Thư mục chứa ảnh trên local
+source_dir="/kaggle/working/data"  # Thư mục chứa ảnh trên local
+
+# Thư mục đích để lưu ảnh đã copy
+target_dir="/kaggle/working/CM4IR/exp/datasets/lsun_cat/cat"  
+
+
 # Đọc từng đường dẫn ảnh từ file input_list.txt
 while read img; do
   [ -z "$img" ] && continue  # Bỏ qua dòng trống
 
-  # Tên file và thư mục tạm
-  fname=$(basename "$img")
-  stem="${fname%.*}"
-  workdir="/tmp/cm4ir_${stem}_$$"
-  mkdir -p "$workdir"
+  # Tên file
+  fname=$(basename "$img")  # Lấy tên file (ví dụ: cat001.png)
 
-  # Lấy ảnh từ thư mục giả lập HDFS về local (Giả sử ảnh đã được tải lên HDFS)
-  hdfs dfs -get -f "$img" "$workdir/$fname" || { echo "FAIL GET $img" >&2; rm -rf "$workdir"; continue; }
+  # Đường dẫn ảnh trong thư mục source_dir (local)
+  source_img="$source_dir/$fname"
 
-  run_id="run_${stem}"
 
-  # Chạy CM4IR trên ảnh
+  # Copy ảnh từ thư mục source_dir vào thư mục đích
+  mv "$source_img" "$target_dir/$fname" || { echo "FAIL MOVE $img" >&2; continue; }
+
+  # Tạo run_id dựa trên tên file
+  run_id="run_${fname%.*}"  # Ví dụ: run_cat001
+
+
+
+  # Chạy CM4IR trên ảnh đã copy vào thư mục đích
   python3 /kaggle/working/CM4IR/main.py \
     --config /kaggle/working/CM4IR/configs/lsun_cat_256.yml \
-    --path_y "$workdir/$fname" \
+    --path_y lsun_cat \
     --deg sr_bicubic \
     --deg_scale 4 \
     --sigma_y 0.05 \
@@ -37,11 +48,11 @@ while read img; do
     --gamma 0.2 \
     --model_ckpt lsun_cat/cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
 
+  # Đường dẫn kết quả đầu ra
   outdir="/kaggle/working/CM4IR/exp/image_samples/$run_id"
 
   # Upload kết quả lên HDFS
   hdfs dfs -put -f "$outdir"/*.png /result/
 
-  echo "DONE $fname -> $outdir"
-  rm -rf "$workdir"
+  echo "DONE $run_id -> $outdir"
 done
