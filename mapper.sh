@@ -36,23 +36,23 @@ while read img; do
 
 done
 
-  # Chạy CM4IR trên ảnh đã copy vào thư mục đích
-  python3 /kaggle/working/CM4IR/main.py \
-    --config /kaggle/working/CM4IR/configs/lsun_cat_256.yml \
-    --path_y lsun_cat \
-    --deg sr_bicubic \
-    --deg_scale 4 \
-    --sigma_y 0.05 \
-    -i "$run_id" \
-    --iN 250 \
-    --gamma 0.2 \
-    --model_ckpt lsun_cat/cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
+# Chạy CM4IR trên ảnh đã copy vào thư mục đích
+python3 /kaggle/working/CM4IR/main.py \
+  --config /kaggle/working/CM4IR/configs/lsun_cat_256.yml \
+  --path_y lsun_cat \
+  --deg sr_bicubic \
+  --deg_scale 4 \
+  --sigma_y 0.05 \
+  -i "$run_id" \
+  --iN 250 \
+  --gamma 0.2 \
+  --model_ckpt lsun_cat/cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
 
-  # Đường dẫn kết quả đầu ra
-  outdir="/kaggle/working/CM4IR/exp/image_samples/$run_id"
+# Đường dẫn kết quả đầu ra
+outdir="/kaggle/working/CM4IR/exp/image_samples/$run_id"
 
-  # Upload kết quả lên HDFS
-  hdfs dfs -put -f "$outdir"/*.png /result/
+# Upload kết quả lên HDFS
+hdfs dfs -put -f "$outdir"/*.png /result/
 
-  echo "DONE $run_id -> $outdir"
+echo "DONE $run_id -> $outdir"
 
