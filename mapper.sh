@@ -35,7 +35,7 @@ while read img; do
     -i "$run_id" \
     --iN 250 \
     --gamma 0.2 \
-    --model_ckpt /kaggle/working/CM4IR/exp/logs/lsun_cat//cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
+    --model_ckpt /kaggle/working/CM4IR/exp/logs/lsun_cat/cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
 
   outdir="/kaggle/working/CM4IR/exp/image_samples/$run_id"
 
