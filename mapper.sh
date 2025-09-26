@@ -34,7 +34,7 @@ while read img; do
   # Tạo run_id dựa trên tên file
   run_id="run_${fname%.*}"  # Ví dụ: run_cat001
 
-
+done
 
   # Chạy CM4IR trên ảnh đã copy vào thư mục đích
   python3 /kaggle/working/CM4IR/main.py \
@@ -55,4 +55,4 @@ while read img; do
   hdfs dfs -put -f "$outdir"/*.png /result/
 
   echo "DONE $run_id -> $outdir"
-done
+
