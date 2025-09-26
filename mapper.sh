@@ -26,8 +26,8 @@ while read img; do
   run_id="run_${stem}"
 
   # Chạy CM4IR trên ảnh
-  python3 /home/hadoop/CM4IR/main.py \
-    --config /home/hadoop/CM4IR/lsun_cat_256.yml \
+  python3 /kaggle/working/CM4IR/main.py \
+    --config /kaggle/working/CM4IR/lsun_cat_256.yml \
     --path_y "$workdir/$fname" \
     --deg sr_bicubic \
     --deg_scale 4 \
@@ -35,12 +35,12 @@ while read img; do
     -i "$run_id" \
     --iN 250 \
     --gamma 0.2 \
-    --model_ckpt /home/hadoop/CM4IR/lsun_cat/cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
+    --model_ckpt /kaggle/working/CM4IR/exp/logs/lsun_cat//cd_cat256_lpips.pt || { echo "FAIL RUN $fname" >&2; rm -rf "$workdir"; continue; }
 
-  outdir="/home/hadoop/CM4IR/exp/image_samples/$run_id"
+  outdir="/kaggle/working/CM4IR/exp/image_samples/$run_id"
 
   # Upload kết quả lên HDFS
-  hdfs dfs -put -f "$outdir"/*.png /user/hadoop/result/
+  hdfs dfs -put -f "$outdir"/*.png /result/
 
   echo "DONE $fname -> $outdir"
   rm -rf "$workdir"
