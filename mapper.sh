@@ -27,7 +27,7 @@ while read img; do
 
   # Chạy CM4IR trên ảnh
   python3 /kaggle/working/CM4IR/main.py \
-    --config /kaggle/working/CM4IR/lsun_cat_256.yml \
+    --config /kaggle/working/CM4IR/configs/lsun_cat_256.yml \
     --path_y "$workdir/$fname" \
     --deg sr_bicubic \
     --deg_scale 4 \
